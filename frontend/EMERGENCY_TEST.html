@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EMERGENCY TEST</title>
+    <style>
+        body { 
+            background: red !important; 
+            color: white !important; 
+            font-size: 50px !important; 
+            text-align: center !important;
+            padding: 100px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚨 EMERGENCY TEST FILE 🚨</h1>
+    <p>If you can see this, the file system is working!</p>
+    <p>Time: <span id="time"></span></p>
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleTimeString();
+        setInterval(() => {
+            document.getElementById('time').textContent = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
+</body>
+</html>

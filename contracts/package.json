@@ -1,0 +1,25 @@
+{
+  "name": "d-climate-contracts",
+  "version": "1.0.0",
+  "description": "Oasis Sapphire Smart Contracts for D-Climate",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy:testnet": "npx hardhat run scripts/deploy.js --network sapphire-testnet",
+    "verify": "npx hardhat verify --network sapphire-testnet",
+    "console": "npx hardhat console --network sapphire-testnet"
+  },
+  "dependencies": {
+    "@oasisprotocol/sapphire-contracts": "^0.2.9",
+    "@oasisprotocol/sapphire-hardhat": "^2.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^17.2.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@typechain/hardhat": "^9.1.0",
+    "hardhat": "^2.19.0",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,0 +1,174 @@
+# D-Climate ROFL Docker Compose Configuration
+# This sets up our confidential climate data platform using Oasis ROFL
+
+version: '3.8'
+
+services:
+  # Main D-Climate ROFL Application
+  d-climate-rofl:
+    image: ghcr.io/oasisprotocol/rofl-dev:main
+    container_name: d-climate-rofl
+    platform: linux/amd64
+    
+    # Mount our source code
+    volumes:
+      - .:/src
+      - ./logs:/app/logs
+      - ./data:/app/data
+    
+    # Working directory
+    working_dir: /src
+    
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - API_PORT=3001
+      - OASIS_NETWORK=sapphire-testnet
+      - TEE_ENABLED=true
+      - CONFIDENTIAL_MODE=true
+    
+    # Network configuration
+    ports:
+      - "3001:3001"
+      - "9090:9090" # Metrics port
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    
+    # Security context
+    security_opt:
+      - no-new-privileges:true
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Command to run our ROFL application
+    command: >
+      sh -c "
+        echo 'Starting D-Climate ROFL with Sapphire TEE...' &&
+        npm install &&
+        npm run build &&
+        npm start
+      "
+
+  # IPFS Node for encrypted data storage
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: d-climate-ipfs
+    
+    volumes:
+      - ipfs_data:/data/ipfs
+      - ipfs_staging:/export
+    
+    ports:
+      - "4001:4001"     # IPFS swarm port
+      - "5001:5001"     # IPFS API port
+      - "8080:8080"     # IPFS gateway port
+    
+    environment:
+      - IPFS_PROFILE=server
+    
+    healthcheck:
+      test: ["CMD", "ipfs", "id"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    restart: unless-stopped
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: d-climate-redis
+    
+    volumes:
+      - redis_data:/data
+    
+    ports:
+      - "6379:6379"
+    
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-climate2025}
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    restart: unless-stopped
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: d-climate-prometheus
+    
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    
+    ports:
+      - "9090:9090"
+    
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    
+    restart: unless-stopped
+
+  # Grafana for monitoring dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: d-climate-grafana
+    
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    
+    ports:
+      - "3000:3000"
+    
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-climate2025}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    
+    restart: unless-stopped
+
+# Named volumes for persistent data
+volumes:
+  ipfs_data:
+    driver: local
+  ipfs_staging:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# Networks
+networks:
+  default:
+    name: d-climate-network
+    driver: bridge

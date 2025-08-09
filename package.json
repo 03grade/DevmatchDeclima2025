@@ -1,0 +1,33 @@
+{
+  "name": "d-climate-backend",
+  "version": "1.0.0",
+  "description": "Decentralized Climate Data Platform - Backend for DevMatch 2025",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run build:contracts && npm run build:rofl && npm run build:api",
+    "build:contracts": "cd contracts && npx hardhat compile",
+    "build:rofl": "cd rofl && npm run build",
+    "build:api": "cd api && npm run build",
+    "test": "npm run test:contracts && npm run test:rofl",
+    "test:contracts": "cd contracts && npx hardhat test",
+    "test:rofl": "cd rofl && npm test",
+    "deploy:testnet": "cd contracts && npx hardhat run scripts/deploy.js --network sapphire-testnet",
+    "start:api": "cd api && npm start",
+    "start:rofl": "cd rofl && npm start",
+    "dev": "concurrently \"npm run start:api\" \"npm run start:rofl\""
+  },
+  "keywords": [
+    "web3",
+    "depin",
+    "climate",
+    "oasis",
+    "sapphire",
+    "rofl",
+    "dao"
+  ],
+  "author": "D-Climate Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

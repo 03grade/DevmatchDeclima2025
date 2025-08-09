@@ -1,0 +1,168 @@
+# D-Climate ROFL Configuration for Oasis Sapphire
+# This configures our climate data platform to run in ROFL (Runtime Off-chain Logic)
+
+# ROFL Application Metadata
+app:
+  name: "d-climate-rofl"
+  version: "1.0.0"
+  description: "D-Climate decentralized climate data platform with TEE encryption"
+  author: "D-Climate Team"
+
+# Runtime Configuration
+runtime:
+  # Use Node.js runtime for our TypeScript/JavaScript backend
+  type: "nodejs"
+  version: "18"
+  
+  # Entry point for our ROFL application
+  entrypoint: "src/index.ts"
+  
+  # Environment variables and secrets
+  env:
+    NODE_ENV: "production"
+    LOG_LEVEL: "info"
+    API_PORT: "3001"
+    
+  # Secrets (will be encrypted and stored securely)
+  secrets:
+    - name: "PRIVATE_KEY"
+      description: "Wallet private key for blockchain transactions"
+    - name: "OPENAI_API_KEY" 
+      description: "OpenAI API key for AI insights generation"
+    - name: "ENCRYPTION_SALT"
+      description: "Salt for additional encryption security"
+
+# Network Configuration
+networks:
+  sapphire-testnet:
+    chain_id: "0x5aff"
+    rpc_url: "https://testnet.sapphire.oasis.dev"
+    contracts:
+      sensor_nfa: "${SENSOR_NFA_CONTRACT}"
+      data_registry: "${DATA_REGISTRY_CONTRACT}" 
+      reward_distributor: "${REWARD_DISTRIBUTOR_CONTRACT}"
+      dao_governance: "${DAO_GOVERNANCE_CONTRACT}"
+
+# Security and Trust Configuration
+security:
+  # Enable Trusted Execution Environment
+  tee: true
+  
+  # Require confidential computing
+  confidential: true
+  
+  # Encryption requirements
+  encryption:
+    data_at_rest: true
+    data_in_transit: true
+    algorithm: "aes-256-gcm"
+  
+  # Attestation requirements
+  attestation:
+    required: true
+    policy: "strict"
+
+# Resource Limits
+resources:
+  memory: "2GB"
+  cpu: "2 cores"
+  storage: "10GB"
+  
+# Services Configuration
+services:
+  # Data validation service
+  data_validator:
+    enabled: true
+    validation_rules:
+      temperature_range: [-50, 60]
+      humidity_range: [0, 100]
+      co2_range: [300, 10000]
+      timestamp_tolerance: 300 # 5 minutes
+  
+  # Encryption service using Sapphire TEE
+  encryption:
+    enabled: true
+    algorithm: "aes-256-gcm"
+    key_management: "sapphire-tee"
+    
+  # IPFS storage service
+  ipfs:
+    enabled: true
+    gateway: "https://gateway.pinata.cloud"
+    
+  # AI processing service
+  ai_processor:
+    enabled: true
+    provider: "openai"
+    model: "gpt-4"
+    temperature: 0 # For reproducible results
+    
+  # Reward calculation service
+  reward_calculator:
+    enabled: true
+    base_reward: 10 # ROSE tokens
+    reputation_multiplier: true
+    
+  # Cron jobs for automation
+  cron_jobs:
+    daily_rewards:
+      schedule: "0 0 * * *" # Daily at midnight
+      enabled: true
+    data_validation:
+      schedule: "*/15 * * * *" # Every 15 minutes
+      enabled: true
+
+# API Configuration
+api:
+  port: 3001
+  cors:
+    enabled: true
+    origins: ["http://localhost:3000", "https://d-climate.app"]
+  
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    
+  authentication:
+    wallet_signature: true
+    jwt_secret: "${JWT_SECRET}"
+
+# Monitoring and Logging
+monitoring:
+  metrics:
+    enabled: true
+    endpoint: "/metrics"
+    
+  health_checks:
+    enabled: true
+    endpoint: "/health"
+    interval: 30 # seconds
+    
+  logging:
+    level: "info"
+    format: "json"
+    destinations:
+      - "stdout"
+      - "file:./logs/rofl.log"
+
+# Development Configuration
+development:
+  hot_reload: false
+  debug: false
+  test_mode: false
+
+# Deployment Configuration  
+deployment:
+  auto_scale: true
+  min_replicas: 1
+  max_replicas: 3
+  
+  health_check:
+    path: "/health"
+    interval: 30
+    timeout: 10
+    
+  readiness_check:
+    path: "/ready"
+    interval: 10
+    timeout: 5

@@ -1,0 +1,32 @@
+{
+  "name": "d-climate-sensor-generator",
+  "version": "1.0.0",
+  "description": "D-Climate Sensor Data Generator - Generates continuous climate data every 15 seconds",
+  "main": "sensor-generator.js",
+  "scripts": {
+    "start": "node sensor-generator.js",
+    "dev": "node sensor-generator.js CLI12345678-550e8400-e29b-41d4-a716-446655440001 0x8Ea29D642B348984F7bAF3bFf889D1d997E9d243",
+    "test": "node --test test/sensor.test.js"
+  },
+  "keywords": [
+    "climate",
+    "sensor",
+    "data",
+    "generator",
+    "oasis",
+    "sapphire",
+    "blockchain"
+  ],
+  "author": "D-Climate Team",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.8.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

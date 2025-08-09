@@ -1,0 +1,17 @@
+{
+  "network": "sapphire-testnet",
+  "timestamp": "2025-08-09T08:49:08.875Z",
+  "deployer": "0x8Ea29D642B348984F7bAF3bFf889D1d997E9d243",
+  "contracts": {
+    "SensorNFA": "0xdE2D86cE2A540Be6F71b714F2386020b124c9141",
+    "DataRegistry": "0xB02104F64D2ED472Fa4023d2d4D45486163598d3",
+    "RewardDistributor": "0x31Bc258a6f1984301c1E69aFC9aC5bEf38b9C134",
+    "DAOGovernance": "0x4f8917C300Cab8738C9800bf410CBb729e3884da",
+    "ConfidentialProxy": "0xef3527e3AcA6B6a178feD55aBb5E8B88A1f35561"
+  },
+  "gasUsed": {},
+  "proxyWallet": {
+    "address": "0xDC10bf26cC639eb631E5d2f6520846e31C7F5E6D",
+    "privateKey": "0x1ae64bbcb8adbaa7a987ad9505e11c703d42e77bb1f32af873f6a8dd254939d4"
+  }
+}

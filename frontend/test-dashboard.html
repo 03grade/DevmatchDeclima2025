@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Dashboard Issue</title>
+</head>
+<body>
+    <h1>Debug Dashboard Issue</h1>
+    <div id="results"></div>
+
+    <script>
+        async function debugDashboard() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>Testing Dashboard API calls...</h2>';
+            
+            // Test 1: Check if backend is running
+            try {
+                const healthResponse = await fetch('http://localhost:3001/health');
+                if (healthResponse.ok) {
+                    results.innerHTML += '<p>✅ Backend is running</p>';
+                } else {
+                    results.innerHTML += '<p>❌ Backend returned error: ' + healthResponse.status + '</p>';
+                    return;
+                }
+            } catch (error) {
+                results.innerHTML += '<p>❌ Cannot connect to backend: ' + error.message + '</p>';
+                return;
+            }
+            
+            // Test 2: Get wallet address from MetaMask
+            let walletAddress = 'No wallet connected';
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        walletAddress = accounts[0];
+                        results.innerHTML += '<p>🦊 MetaMask wallet: ' + walletAddress + '</p>';
+                    } else {
+                        results.innerHTML += '<p>⚠️ MetaMask not connected</p>';
+                    }
+                } catch (error) {
+                    results.innerHTML += '<p>❌ MetaMask error: ' + error.message + '</p>';
+                }
+            } else {
+                results.innerHTML += '<p>❌ MetaMask not found</p>';
+            }
+            
+            // Test 3: Check sensors for the actual wallet address
+            if (walletAddress !== 'No wallet connected') {
+                try {
+                    const sensorsResponse = await fetch(`http://localhost:3001/api/device/user/${walletAddress}`);
+                    if (sensorsResponse.ok) {
+                        const data = await sensorsResponse.json();
+                        results.innerHTML += '<p>📊 Sensors found for wallet: ' + (data.devices ? data.devices.length : 0) + '</p>';
+                        if (data.devices && data.devices.length > 0) {
+                            results.innerHTML += '<p>✅ Sensor IDs: ' + data.devices.map(s => s.id).join(', ') + '</p>';
+                        }
+                    } else {
+                        results.innerHTML += '<p>❌ Sensor API error: ' + sensorsResponse.status + '</p>';
+                    }
+                } catch (error) {
+                    results.innerHTML += '<p>❌ Sensor API error: ' + error.message + '</p>';
+                }
+            }
+            
+            // Test 4: Check sensors for the stored address
+            try {
+                const sensorsResponse = await fetch('http://localhost:3001/api/device/user/0x8BFE2D243');
+                if (sensorsResponse.ok) {
+                    const data = await sensorsResponse.json();
+                    results.innerHTML += '<p>📊 Sensors found for 0x8BFE2D243: ' + (data.devices ? data.devices.length : 0) + '</p>';
+                    if (data.devices && data.devices.length > 0) {
+                        results.innerHTML += '<p>✅ Stored sensor IDs: ' + data.devices.map(s => s.id).join(', ') + '</p>';
+                    }
+                } else {
+                    results.innerHTML += '<p>❌ Stored address API error: ' + sensorsResponse.status + '</p>';
+                }
+            } catch (error) {
+                results.innerHTML += '<p>❌ Stored address API error: ' + error.message + '</p>';
+            }
+        }
+        
+        debugDashboard();
+    </script>
+</body>
+</html>

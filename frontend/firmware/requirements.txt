@@ -1,0 +1,4 @@
+# Python requirements for Raspberry Pi Climate Sensor
+requests>=2.25.1
+RPi.GPIO>=0.7.0
+Adafruit-DHT>=1.4.0
