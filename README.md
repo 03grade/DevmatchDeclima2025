@@ -337,7 +337,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: [Project Wiki](https://github.com/your-username/d-climate/wiki)
 - **Issues**: [GitHub Issues](https://github.com/your-username/d-climate/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/your-username/d-climate/discussions)
-- **Email**: support@d-climate.dev
+- **Email**: declima8@gmail.com
 
 ---
 
